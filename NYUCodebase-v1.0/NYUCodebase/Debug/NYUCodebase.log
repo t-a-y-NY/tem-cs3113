@@ -1,3 +1,2 @@
 ﻿  main.cpp
-c:\users\temyo\documents\github\tem-cs3113\nyucodebase-v1.0\nyucodebase\main.cpp(68): error C2374: 'vertices': redefinition; multiple initialization
-  c:\users\temyo\documents\github\tem-cs3113\nyucodebase-v1.0\nyucodebase\main.cpp(59): note: see declaration of 'vertices'
+  NYUCodebase.vcxproj -> C:\Users\temyo\Documents\GitHub\tem-cs3113\NYUCodebase-v1.0\Debug\NYUCodebase.exe

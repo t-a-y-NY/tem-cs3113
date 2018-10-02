@@ -86,6 +86,9 @@
     <None Include="fragment_textured.glsl" />
     <None Include="vertex.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\CS3113\assets\particle_textures\fire2.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

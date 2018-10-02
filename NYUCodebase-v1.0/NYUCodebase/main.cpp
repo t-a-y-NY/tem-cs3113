@@ -17,6 +17,26 @@
 
 SDL_Window* displayWindow;
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+GLuint LoadTexture(const char *filePath) {
+	int w, h, comp;
+	unsigned char* image = stbi_load(filePath, &w, &h, &comp, STBI_rgb_alpha);
+	if (image == NULL) {
+		std::cout << "Unable to load image. Make sure the path is correct\n";
+		assert(false);
+	}
+	GLuint retTexture;
+	glGenTextures(1, &retTexture);
+	glBindTexture(GL_TEXTURE_2D, retTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	stbi_image_free(image);
+	return retTexture;
+}
+
 int main(int argc, char *argv[])
 {
     SDL_Init(SDL_INIT_VIDEO);
@@ -33,6 +53,9 @@ int main(int argc, char *argv[])
 	ShaderProgram program; // leave
 	program.Load(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl"); // leave
 
+
+	GLuint texture = LoadTexture(RESOURCE_FOLDER"glow3.png");
+
 	glm::mat4 projectionMatrix1 = glm::mat4(1.0f);
 	glm::mat4 modelMatrix1 = glm::mat4(1.0f);
 	glm::mat4 viewMatrix1 = glm::mat4(1.0f);
@@ -42,6 +65,11 @@ int main(int argc, char *argv[])
 	glm::mat4 modelMatrix2 = glm::mat4(1.0f);
 	glm::mat4 viewMatrix2 = glm::mat4(1.0f);
 	projectionMatrix2 = glm::ortho(-1.777f, 1.777f, -1.0f, 1.0f, -1.0f, 1.0f);
+
+	glm::mat4 projectionMatrix3 = glm::mat4(1.0f);
+	glm::mat4 modelMatrix3 = glm::mat4(1.0f);
+	glm::mat4 viewMatrix3 = glm::mat4(1.0f);
+	projectionMatrix3 = glm::ortho(-1.777f, 1.777f, -1.0f, 1.0f, -1.0f, 1.0f);
 
 	glUseProgram(program.programID); // leave
 
@@ -56,17 +84,36 @@ int main(int argc, char *argv[])
 		program.SetModelMatrix(modelMatrix1);
 		program.SetProjectionMatrix(projectionMatrix1);
 		program.SetViewMatrix(viewMatrix1);
-		float vertices[] = { 0.5f, -0.5f, 0.0f, 0.5f, -0.5f, -0.5f };
-		glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		float vertices1[] = { 0.5f, -0.5f, 0.0f, 0.5f, -0.5f, -0.5f };
+		glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices1);
 		glEnableVertexAttribArray(program.positionAttribute);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		float texCoords[] = { 0.5f, -0.5f, 0.0f, 0.5f, -0.5f, -0.5f };
+		glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+		glEnableVertexAttribArray(program.texCoordAttribute);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDisableVertexAttribArray(program.positionAttribute);
+		glDisableVertexAttribArray(program.texCoordAttribute);
+
+
+
+		float angle = 45.0f * (3.1415926f / 180.0f);
+		modelMatrix2 = glm::rotate(modelMatrix2, angle, glm::vec3(0.0f, 0.0f, 1.0f));
 
 		program.SetModelMatrix(modelMatrix2);
 		program.SetProjectionMatrix(projectionMatrix2);
 		program.SetViewMatrix(viewMatrix2);
-		float vertices[] = { 1.0f, 1.0f, 0.5f, 1.0f, 0.0f, 0.0f };
-		glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+		float vertices2[] = { 1.0f, 0.0f, 1.0f, -0.5f, 1.5f, 0.0f };
+		glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices2);
+		glEnableVertexAttribArray(program.positionAttribute);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDisableVertexAttribArray(program.positionAttribute);
+
+		program.SetModelMatrix(modelMatrix3);
+		program.SetProjectionMatrix(projectionMatrix3);
+		program.SetViewMatrix(viewMatrix3);
+		float vertices3[] = { -1.0f, 0.0f, -1.0f, -0.5f, -1.5f, 0.0f };
+		glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices3);
 		glEnableVertexAttribArray(program.positionAttribute);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDisableVertexAttribArray(program.positionAttribute);
@@ -80,7 +127,6 @@ int main(int argc, char *argv[])
                 done = true;
         }
         glClear(GL_COLOR_BUFFER_BIT);
-        SDL_GL_SwapWindow(displayWindow);
     }
     
     SDL_Quit();

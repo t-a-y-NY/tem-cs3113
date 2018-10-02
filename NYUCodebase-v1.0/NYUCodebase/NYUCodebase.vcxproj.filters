@@ -32,4 +32,9 @@
     <None Include="vertex.glsl" />
     <None Include="fragment_textured.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\CS3113\assets\particle_textures\fire2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
